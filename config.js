@@ -1,4 +1,8 @@
-import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
+// const firebase = require('firebase');
+
+const { initializeApp } = require("firebase/app");
+const { getFirestore, collection } = require("firebase/firestore");
 
 const firebaseConfig = {
   apiKey: "AIzaSyAKK8j-0P2iuQXW_kO5JFPb9h_kzjHgPBg",
@@ -11,4 +15,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const db = getFirestore(app);
+const User = collection(db, "Users");
+
+module.exports = User;
+
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
