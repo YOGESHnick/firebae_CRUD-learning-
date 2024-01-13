@@ -68,7 +68,17 @@ app.post("/update", async(req,res)=>{
   } catch (error) {
     res.send(error);
   }
-})
+});
+
+//  D E L E T E   Operation
+app.post("/delete/:id", async(req,res)=>{
+  try {
+    const response = await db.collection("users").doc(req.params.id).delete();
+    res.send(response);
+  } catch (error) {
+    res.send(error);
+  }
+});
 
 const PORT = process.env.PORT || 8080 ;
 app.listen(PORT, ()=>{
