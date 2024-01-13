@@ -1,33 +1,50 @@
 const express = require("express");
-const cors = require("cors");
-const User = require("./config");
 const app = express();
+// const cors = require("cors");
+const admin = require("firebase-admin");
+const credentials = require("./key.json");
+
+admin.initializeApp({
+  credential:admin.credential.cert(credentials)
+});
 app.use(express.json());
-app.use(cors());
+app.use(express.urlencoded({extended:true}));
 
-app.get("/", async (req, res) => {
-  const snapshot = await User.get();
-  const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  res.send(list);
-});
+const db = admin.firestore();
+// CRUD Operations
 
-app.post("/create", async (req, res) => {
-  const data = req.body;
-  await User.add({ data });
-  res.send({ msg: "User Added" });
+// C R E A T E   Operation
+app.post("/create", async(req,res)=>{
+  try {
+    console.log(req.body);
+    const id =req.body.email;
+    const userJson = {
+      email:req.body.email,
+      firstName:req.body.firstName,
+      lastName:req.body.lastName
+    };
+    const response = await db.collection("users").add(userJson);
+    res.send(response);
+  } catch (error) {
+    res.send(error);
+  }
 });
+// R E A D  Operation
+app.get("/read/all", async(req,res)=>{
+  try {
+    const usersRef = db.collection("users");
+    const response = await usersRef.get();
+    let responseArr = [];
+    response.forEach(doc => {
+      responseArr.push(doc.data());
+    });
+    res.send(responseArr);
+  } catch (error) {
+    res.send(error);
+  }
+})
 
-app.post("/update", async (req, res) => {
-  const id = req.body.id;
-  delete req.body.id;
-  const data = req.body;
-  await User.doc(id).update(data);
-  res.send({ msg: "Updated" });
+const PORT = process.env.PORT || 8080 ;
+app.listen(PORT, ()=>{
+  console.log(`Server is running on PORT : ${PORT}`);
 });
-
-app.post("/delete", async (req, res) => {
-  const id = req.body.id;
-  await User.doc(id).delete();
-  res.send({ msg: "Deleted" });
-});
-app.listen(4000, () => console.log("Up & RUnning *4000"));
