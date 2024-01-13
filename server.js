@@ -54,6 +54,22 @@ app.get("/read/:id", async(req,res)=>{
   }
 });
 
+// U P D A T E   Operation
+app.post("/update", async(req,res)=>{
+  try {
+    const id = req.body.id;
+    const newFirstName = "NicklinZander";
+    const userRef = await db.collection("users").doc(id)
+    .update({
+      firstName: newFirstName
+    });
+    const response = await userRef.get();
+    res.send(userRef);
+  } catch (error) {
+    res.send(error);
+  }
+})
+
 const PORT = process.env.PORT || 8080 ;
 app.listen(PORT, ()=>{
   console.log(`Server is running on PORT : ${PORT}`);
