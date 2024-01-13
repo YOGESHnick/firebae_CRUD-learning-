@@ -42,7 +42,17 @@ app.get("/read/all", async(req,res)=>{
   } catch (error) {
     res.send(error);
   }
-})
+});
+// R E A D   O N E   Operation
+app.get("/read/:id", async(req,res)=>{
+  try {
+    const userRef = db.collection("users").doc(req.params.id);
+    const response = await userRef.get();
+    res.send(response.data());
+  } catch (error) {
+    res.send(error);
+  }
+});
 
 const PORT = process.env.PORT || 8080 ;
 app.listen(PORT, ()=>{
